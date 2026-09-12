@@ -78,7 +78,7 @@ function SectionRow({
 }: {
   node: SectionNode;
   depth: number;
-  currentSectionId?: string;
+  currentSectionId?: string | undefined;
   items: VisionItem[];
   onEdit: (section: Section) => void;
   onAddChild: (parentId: string) => void;
@@ -261,7 +261,7 @@ function SortableTopLevel({
   collapsed,
 }: {
   node: SectionNode;
-  currentSectionId?: string;
+  currentSectionId?: string | undefined;
   items: VisionItem[];
   onEdit: (section: Section) => void;
   onAddChild: (parentId: string) => void;
@@ -294,7 +294,7 @@ export function SectionTree({
   currentSectionId,
   collapsed,
 }: {
-  currentSectionId?: string;
+  currentSectionId?: string | undefined;
   collapsed: boolean;
 }) {
   const queryClient = useQueryClient();

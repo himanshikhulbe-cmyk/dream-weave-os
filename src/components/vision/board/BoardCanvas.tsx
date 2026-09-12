@@ -52,13 +52,15 @@ export function BoardCanvas({
     panOrigin?: { x: number; y: number };
   }>(null);
 
+  /** Ids whose local position hasn't been persisted yet — never overwrite those from server data. */
+  const pendingRef = useRef<Set<string>>(new Set());
+
   useEffect(() => {
     setPositions((prev) => {
       const next = { ...prev };
       for (const it of items) {
-        if (!next[it.id]) {
-          next[it.id] = { x: it.x, y: it.y, w: it.w, h: it.h, rotation: it.rotation, z_index: it.z_index };
-        }
+        if (pendingRef.current.has(it.id) && next[it.id]) continue;
+        next[it.id] = { x: it.x, y: it.y, w: it.w, h: it.h, rotation: it.rotation, z_index: it.z_index };
       }
       for (const id of Object.keys(next)) {
         if (!items.some((it) => it.id === id)) delete next[id];
@@ -70,11 +72,15 @@ export function BoardCanvas({
   const persistTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const persist = useCallback(
     (ids: string[], posMap: Record<string, Pos>) => {
+      for (const id of ids) pendingRef.current.add(id);
       if (persistTimer.current) clearTimeout(persistTimer.current);
       persistTimer.current = setTimeout(() => {
-        void updateItemPositions(ids.map((id) => ({ id, ...posMap[id]! }))).then(() => {
-          void queryClient.invalidateQueries({ queryKey: keys.items(sectionId) });
-        });
+        const pendingIds = Array.from(pendingRef.current);
+        void updateItemPositions(pendingIds.map((id) => ({ id, ...posMap[id]! })))
+          .then(() => queryClient.invalidateQueries({ queryKey: keys.items(sectionId) }))
+          .finally(() => {
+            for (const id of pendingIds) pendingRef.current.delete(id);
+          });
       }, 400);
     },
     [queryClient, sectionId],
