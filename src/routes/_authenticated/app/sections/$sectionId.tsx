@@ -55,8 +55,8 @@ import { cn } from "@/lib/utils";
 const MODE_IDS = VIEW_MODES.map((m) => m.id);
 
 interface BoardSearch {
-  item?: string;
-  mode?: ViewMode;
+  item?: string | undefined;
+  mode?: ViewMode | undefined;
 }
 
 export const Route = createFileRoute("/_authenticated/app/sections/$sectionId")({
