@@ -23,8 +23,8 @@ interface GraphNode {
   y: number;
   vx: number;
   vy: number;
-  item?: VisionItem;
-  sectionId?: string;
+  item?: VisionItem | undefined;
+  sectionId?: string | undefined;
 }
 
 interface GraphEdge {
