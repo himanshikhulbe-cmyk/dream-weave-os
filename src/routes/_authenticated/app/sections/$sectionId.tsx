@@ -54,11 +54,18 @@ import { cn } from "@/lib/utils";
 
 const MODE_IDS = VIEW_MODES.map((m) => m.id);
 
+interface BoardSearch {
+  item?: string;
+  mode?: ViewMode;
+}
+
 export const Route = createFileRoute("/_authenticated/app/sections/$sectionId")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    item: typeof search["item"] === "string" ? search["item"] : undefined,
-    mode: MODE_IDS.includes(search["mode"] as ViewMode) ? (search["mode"] as ViewMode) : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): BoardSearch => {
+    const out: BoardSearch = {};
+    if (typeof search["item"] === "string") out.item = search["item"];
+    if (MODE_IDS.includes(search["mode"] as ViewMode)) out.mode = search["mode"] as ViewMode;
+    return out;
+  },
   head: () => ({
     meta: [
       { title: "Section board — Vision OS" },
