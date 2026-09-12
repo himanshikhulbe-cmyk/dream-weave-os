@@ -7,8 +7,8 @@ import { Image as ImageIcon, Mic, FileText, Play, File } from "lucide-react";
 
 export interface TimelineViewProps {
   items: VisionItem[];
-  onOpen?: (item: VisionItem) => void;
-  className?: string;
+  onOpen?: ((item: VisionItem) => void) | undefined;
+  className?: string | undefined;
 }
 
 type Filter = "all" | "goals" | "memories" | "milestones";

@@ -25,7 +25,7 @@ export function SidebarContent({
 }: {
   collapsed: boolean;
   onToggleCollapse?: () => void;
-  currentSectionId?: string;
+  currentSectionId?: string | undefined;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { data: profile } = useQuery(profileQuery);

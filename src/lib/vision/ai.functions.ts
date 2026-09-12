@@ -1,6 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { Database, Json } from "@/integrations/supabase/types";
 
 /* ------------------------------------------------------------------ */
 /* Shared helpers                                                      */
@@ -15,7 +17,7 @@ function stripHtml(html: string | null | undefined): string {
     .slice(0, 300);
 }
 
-type SupabaseCtx = { supabase: any; userId: string };
+type SupabaseCtx = { supabase: SupabaseClient<Database>; userId: string };
 
 async function loadContext(ctx: SupabaseCtx) {
   const { data: sections } = await ctx.supabase
@@ -31,7 +33,7 @@ async function loadContext(ctx: SupabaseCtx) {
     .order("created_at", { ascending: false })
     .limit(200);
 
-  const cleanedItems = (items ?? []).map((it: any) => ({
+  const cleanedItems = (items ?? []).map((it) => ({
     title: it.title as string | null,
     type: it.type as string,
     text_kind: it.text_kind as string | null,
@@ -160,7 +162,7 @@ export const generateReminders = createServerFn({ method: "POST" })
         .from("notifications")
         .select("title")
         .eq("read", false);
-      const existingTitles = new Set((existingUnread ?? []).map((n: any) => n.title as string));
+      const existingTitles = new Set((existingUnread ?? []).map((n) => n.title));
 
       const toInsert = unique
         .filter((title) => !existingTitles.has(title))
@@ -278,7 +280,7 @@ export const generatePatterns = createServerFn({ method: "POST" })
       user_id: context.userId,
       kind: "pattern",
       content: contentSummary,
-      meta: parsed as unknown as Record<string, unknown>,
+      meta: parsed as unknown as Json,
     });
     if (error) throw error;
 

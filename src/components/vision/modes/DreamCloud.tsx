@@ -7,13 +7,13 @@ import { Image as ImageIcon, Mic, FileText, Play, File, Minus, Plus, LocateFixed
 
 export interface DreamCloudProps {
   items: VisionItem[];
-  connections?: Connection[];
-  onOpen?: (item: VisionItem) => void;
+  connections?: Connection[] | undefined;
+  onOpen?: ((item: VisionItem) => void) | undefined;
   /** Optional override for resolving an image URL (used by the public demo). */
-  resolveImage?: (item: VisionItem) => string | null;
-  className?: string;
+  resolveImage?: ((item: VisionItem) => string | null) | undefined;
+  className?: string | undefined;
   /** Bump to force a fresh random layout (e.g. after Vision Shuffle). */
-  seed?: number;
+  seed?: number | undefined;
 }
 
 /* ------------------------------------------------------------------ */
@@ -81,7 +81,7 @@ function makeNodes(items: VisionItem[], seed: number): PhysicsNode[] {
 /* Node glyph / content                                                */
 /* ------------------------------------------------------------------ */
 
-function NodeImage({ item, resolveImage }: { item: VisionItem; resolveImage?: (item: VisionItem) => string | null }) {
+function NodeImage({ item, resolveImage }: { item: VisionItem; resolveImage?: ((item: VisionItem) => string | null) | undefined }) {
   const override = resolveImage?.(item) ?? null;
   const signed = useMediaUrl(override ? null : item.media_path);
   const url = override ?? signed;
@@ -102,7 +102,7 @@ function NodeImage({ item, resolveImage }: { item: VisionItem; resolveImage?: (i
   );
 }
 
-function NodeContent({ item, resolveImage }: { item: VisionItem; resolveImage?: (item: VisionItem) => string | null }) {
+function NodeContent({ item, resolveImage }: { item: VisionItem; resolveImage?: ((item: VisionItem) => string | null) | undefined }) {
   switch (item.type) {
     case "image":
       return <NodeImage item={item} resolveImage={resolveImage} />;
